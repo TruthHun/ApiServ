@@ -15,6 +15,35 @@ $(function () {
 
     $(".ajax-form [type=submit]").click(function (e) {
         e.preventDefault();
+        var form=$(this).parents("form"),data=form.serialize(),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url");
+        if(redirect==undefined || redirect=="") redirect=location.href;
+        if(method!=undefined && method.toLowerCase()=="post"){
+            $.post(action,data,function (ret) {
+                if(ret.Status==1){
+                    location.href=redirect
+                }else{
+                    bootoast({
+                        message: ret.Msg,
+                        position:'right-top',
+                        timeout:2,
+                        type:'danger',
+                    });
+                }
+            });
+        }else{
+            $.get(action,data,function (ret) {
+                if(ret.Status==1){
+                    location.href=redirect
+                }else{
+                    bootoast({
+                        message: ret.Msg,
+                        position:'right-top',
+                        type:'danger',
+                        timeout:2
+                    });
+                }
+            });
+        }
     })
 
 

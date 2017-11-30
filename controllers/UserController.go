@@ -47,7 +47,7 @@ func (this *UserController) Reg() {
 				TimeCreate: int(time.Now().Unix()),                         //注册时间
 			}
 			if created, id, err := models.O.ReadOrCreate(&user, "Username"); err != nil || !created || id == 0 {
-				this.Response(0, "注册失败，用户名已存在")
+				this.Response(0, "注册失败，用户名已存在或邮箱已被注册")
 			} else {
 				//设置session
 				user.Id = int(id)
@@ -66,7 +66,19 @@ func (this *UserController) Reg() {
 func (this *UserController) Login() {
 	this.handleHasLoginRedirect()
 	if this.Ctx.Input.IsPost() {
-
+		email := this.GetString("Email")
+		if err := validatil.ExecValid(email, "email"); err != nil {
+			this.Response(1, "邮箱格式不正确")
+		}
+		var user models.User
+		models.O.QueryTable(models.TableUser).Filter("Email", email).Filter("Password", cryptil.Sha1Crypt(this.GetString("Password"))).One(&user)
+		if user.Id > 0 {
+			this.LoginUser = user
+			this.SetSession("LoginUser", user)
+			this.Response(1, "登录成功")
+		} else {
+			this.Response(0, "登录失败，邮箱或密码错误")
+		}
 	} else {
 		this.TplName = "login.html"
 	}
@@ -74,6 +86,7 @@ func (this *UserController) Login() {
 
 //用户退出
 func (this *UserController) Logout() {
+	this.SetSession("LoginUser", models.User{}) //设置空值
 	this.Redirect(beego.URLFor("IndexController.Index"), 302)
 }
 

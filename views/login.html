@@ -15,16 +15,16 @@
                 <div class="panel panel-default as-mgt-50px">
                     <div class="panel-heading"><strong>ApiServ用户登录</strong><a href="{{urlfor "IndexController.Index"}}" class="pull-right" title="ApiServ首页"> <i class="fa fa-home"></i> 首页</a></div>
                     <div class="panel-body">
-                        <form role="form as-mgt-50px" method="post">
+                        <form role="form as-mgt-50px" class="ajax-form" data-url="{{urlfor "UserController.Apis"}}" method="post">
                             <div class="form-group">
                                 <label>邮箱</label>
                                 <input type="text" required="required" class="form-control" name="Email" placeholder="请输入邮箱">
                             </div>
                             <div class="form-group">
                                 <label>密码</label>
-                                <input type="password" required="required" class="form-control" name="password" placeholder="请输入密码">
+                                <input type="password" required="required" class="form-control" name="Password" placeholder="请输入密码">
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">注册用户</button>
+                            <button type="submit" class="btn btn-primary btn-block">码上用户</button>
                         </form>
                         <div class="help-block text-center">
                             没有账号？<a href="{{urlfor "UserController.Reg"}}" class="text-primary">码上注册</a>
