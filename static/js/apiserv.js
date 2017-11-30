@@ -102,6 +102,10 @@ $(function () {
         });
     }
 
+    $('.panel-collapse').collapse({
+        toggle: false
+    });
+
 });
 
 

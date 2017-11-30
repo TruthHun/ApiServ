@@ -35,87 +35,91 @@
                 {{/*</div>*/}}
                 <div class="col-xs-12">
 
-                    {{range $.Apis}}
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <strong>用户登录接口</strong>
-                                <span class="pull-right">
-                                    <a href="{{urlfor "UserController.ApiCreate"}}?id={{.Id}}"> <i class="fa fa-pencil"></i> 编辑</a>  <span> | </span>
-                                    <a href="{{urlfor "UserController.ApiDel"}}?id={{.Id}}" class="ajax-get"> <i class="fa fa-remove"></i> 删除</a>
-                                </span>
+                    <div class="panel-group" id="accordion">
+                        {{range $idx,$val:=$.Apis}}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{.Id}}">{{.Title}}</a>
+                                        <span class="pull-right">
+                                        <a href="{{urlfor "UserController.ApiCreate"}}?id={{.Id}}"> <i class="fa fa-pencil"></i> 编辑</a>  <span> | </span>
+                                        <a href="{{urlfor "UserController.ApiDel"}}?id={{.Id}}" class="ajax-get"> <i class="fa fa-remove"></i> 删除</a>
+                                    </span>
+                                    </h4>
+                                </div>
+                                <div id="collapse{{.Id}}" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>
+                                                <div>请求API</div>
+                                                <div class="help-block">{{.Api}}</div>
+                                            </li>
+                                            <li>
+                                                <div>请求URL</div>
+                                                <div class="help-block">http://apiserv.me/api/{{$.LoginUser.Username}}/{{TrimLeft .Api " /"}}</div>
+                                            </li>
+                                            <li>
+                                                <div>请求方法</div>
+                                                <div class="help-block">
+                                                {{range (Split .Methods ",")}}
+                                                    <span class="label label-success">{{.}}</span>
+                                                {{end}}
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div>请求参数</div>
+                                                <div class="help-block">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>参数名</th>
+                                                                <th>参数类型</th>
+                                                                <th>参数说明</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {{range (HandleParams .Params)}}
+                                                            <tr>
+                                                                <td>{{.ParamsName}}</td>
+                                                                <td>{{.ParamsType}}</td>
+                                                                <td>{{.ParamsState}}</td>
+                                                            </tr>
+                                                            {{end}}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div>成功时JSON响应</div>
+                                                <div class="help-block">
+                                                    <div class="help-block">格式化数据 <i class="fa fa-hand-o-down"></i> </div>
+                                                    <pre class="json-renderer"></pre>
+                                                    <div class="help-block">原数据 <i class="fa fa-hand-o-down"></i> </div>
+                                                    <textarea class="form-control" rows="2">{{.JsonSucc}}</textarea>
+
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div>失败时JSON响应</div>
+                                                <div class="help-block">
+                                                    <div class="help-block">格式化数据 <i class="fa fa-hand-o-down"></i> </div>
+                                                    <pre class="json-renderer"></pre>
+                                                    <div class="help-block">原数据 <i class="fa fa-hand-o-down"></i> </div>
+                                                    <textarea class="form-control" rows="2">{{.JsonErr}}</textarea>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="panel-body">
-                                <ul>
-                                    {{/*<li>*/}}
-                                        {{/*<div>创建时间</div>*/}}
-                                        {{/*<div class="help-block"></div>*/}}
-                                    {{/*</li>*/}}
-                                    <li>
-                                        <div>请求API</div>
-                                        <div class="help-block">{{.Api}}</div>
-                                    </li>
-                                    <li>
-                                        <div>请求URL</div>
-                                        <div class="help-block">http://apiserv.me/api/{{$.LoginUser.Username}}/{{TrimLeft .Api " /"}}</div>
-                                    </li>
-                                    <li>
-                                        <div>请求方法</div>
-                                        <div class="help-block">
-                                            {{range (Split .Methods ",")}}
-                                            <span class="label label-success">{{.}}</span>
-                                            {{end}}
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div>请求参数</div>
-                                        <div class="help-block">
-                                            <div class="table-responsive">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>参数名</th>
-                                                            <th>参数类型</th>
-                                                            <th>参数说明</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {{range (HandleParams .Params)}}
-                                                        <tr>
-                                                            <td>{{.ParamsName}}</td>
-                                                            <td>{{.ParamsType}}</td>
-                                                            <td>{{.ParamsState}}</td>
-                                                        </tr>
-                                                        {{end}}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div>成功时JSON响应</div>
-                                        <div class="help-block">
-                                            <div class="help-block">格式化数据 <i class="fa fa-hand-o-down"></i> </div>
-                                            <pre class="json-renderer"></pre>
-                                            <div class="help-block">原数据 <i class="fa fa-hand-o-down"></i> </div>
-                                            <textarea class="form-control" rows="2">{{.JsonSucc}}</textarea>
+                        {{end}}
+                    </div>
 
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div>失败时JSON响应</div>
-                                        <div class="help-block">
-                                            <div class="help-block">格式化数据 <i class="fa fa-hand-o-down"></i> </div>
-                                            <pre class="json-renderer"></pre>
-                                            <div class="help-block">原数据 <i class="fa fa-hand-o-down"></i> </div>
-                                            <textarea class="form-control" rows="2">{{.JsonErr}}</textarea>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
 
-                    {{end}}
+
 
                 </div>
             </div>
