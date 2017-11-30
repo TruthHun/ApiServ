@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ApiServ</title>
+    {{template "head.html" .}}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="container">
+            <h1 class="logo">Welcome To ApiServ</h1>
+            <div class="text-center">
+                {{if gt $.LoginUser.Id 0}}
+                    <a href="{{urlfor "UserController.Apis"}}" class="btn btn-primary" title="API管理"> <i class=" fa fa-cogs"></i> API管理</a>
+                    <a href="{{urlfor "UserController.Logout"}}" class="btn btn-primary" title="退出登录"> <i class="fa fa-sign-out"></i>退出登录</a>
+                {{else}}
+                    <a href="{{urlfor "UserController.Reg"}}" class="btn btn-primary" title="码上注册"> <i class="fa fa-user-o"></i> 码上注册</a>
+                    <a href="{{urlfor "UserController.Login"}}" class="btn btn-primary" title="码上登录"> <i class="fa fa-sign-in"></i> 码上登录</a>
+                {{end}}
+            </div>
+            <div class="description as-mgt-50px text-center">
+                <div class=" as-mgt-50px ">
+                    <strong>ApiServ</strong>由 <span class="text-danger">进击的皇虫</span> 开发。由于时间匆忙，目前暂时实现了部分功能，更多功能和页面体验留待后续优化。关于使用说明，请访问 <a href="#" class="text-primary"><strong>看云(KanCloud.CN)</strong></a>
+                </div>
+            </div>
+
+        </div>
+  </div>
+    {{template "foot.html" .}}
+</body>
+</html>
