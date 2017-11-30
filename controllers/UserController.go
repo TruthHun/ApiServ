@@ -1,106 +1,106 @@
 package controllers
 
 import (
-	"strings"
-
 	"ApiServ/models"
-
-	"time"
-
-	"github.com/TruthHun/gotil/cryptil"
-	"github.com/TruthHun/gotil/validatil"
-	"github.com/astaxie/beego"
+	"encoding/json"
+	"strconv"
+	"strings"
 )
 
 type UserController struct {
 	BaseController
 }
 
-//用户注册
-func (this *UserController) Reg() {
-	this.handleHasLoginRedirect()
-	if this.Ctx.Input.IsPost() {
-		var rules = map[string][]string{
-			"Username":   []string{"required", "mincount:1", "maxcount:30", "alphanumeric"}, //必填、1-30个字符、数字和字母
-			"Nickname":   []string{"required", "mincount:1", "maxcount:20"},                 //必填、1-30个字符、数字和字母
-			"Email":      []string{"required", "email", "maxcount:100"},                     //必填、1-100个字符
-			"Password":   []string{"required"},                                              //必填
-			"Repassword": []string{"required"},                                              //必填
-			"InviteCode": []string{},                                                        //非必填
-		}
-		if params, errs := validatil.Valid(this.Ctx.Request.Form, rules); len(errs) > 0 {
-			this.Response(0, "请按表单要求提示填写注册表单", errs)
-		} else {
-			if InviteCode := strings.TrimSpace(beego.AppConfig.String("invite_code")); len(InviteCode) > 0 {
-				if ic, ok := params["InviteCode"]; !ok || ic != InviteCode {
-					this.Response(0, "注册邀请码不正确，请联系管理员获取")
-				}
-			}
-			if params["Password"].(string) != params["Repassword"] {
-				this.Response(0, "两次输入密码不一致，请重新输入")
-			}
-			var user = models.User{
-				Username:   params["Username"].(string),
-				Nickname:   params["Nickname"].(string),
-				Email:      params["Email"].(string),
-				Password:   cryptil.Sha1Crypt(params["Password"].(string)), //密码
-				TimeCreate: int(time.Now().Unix()),                         //注册时间
-			}
-			if created, id, err := models.O.ReadOrCreate(&user, "Username"); err != nil || !created || id == 0 {
-				this.Response(0, "注册失败，用户名已存在或邮箱已被注册")
-			} else {
-				//设置session
-				user.Id = int(id)
-				this.SetSession("LoginUser", user)
-				this.LoginUser = user
-				this.Response(1, "注册成功")
-			}
-
-		}
-	} else {
-		this.TplName = "reg.html"
-	}
-}
-
-//用户登录
-func (this *UserController) Login() {
-	this.handleHasLoginRedirect()
-	if this.Ctx.Input.IsPost() {
-		email := this.GetString("Email")
-		if err := validatil.ExecValid(email, "email"); err != nil {
-			this.Response(1, "邮箱格式不正确")
-		}
-		var user models.User
-		models.O.QueryTable(models.TableUser).Filter("Email", email).Filter("Password", cryptil.Sha1Crypt(this.GetString("Password"))).One(&user)
-		if user.Id > 0 {
-			this.LoginUser = user
-			this.SetSession("LoginUser", user)
-			this.Response(1, "登录成功")
-		} else {
-			this.Response(0, "登录失败，邮箱或密码错误")
-		}
-	} else {
-		this.TplName = "login.html"
-	}
-}
-
-//用户退出
-func (this *UserController) Logout() {
-	this.SetSession("LoginUser", models.User{}) //设置空值
-	this.Redirect(beego.URLFor("IndexController.Index"), 302)
+//未登录用户，直接跳转登录页面
+//用户登录了，才能访问下面的控制器方法
+func (this *UserController) Prepare() {
+	this.BaseController.Prepare() //继承基类初始化函数
+	this.handleNotLoginRedirect() //没登录用户跳转登录页面
 }
 
 //接口列表
 func (this *UserController) Apis() {
+	var apis []models.Api
+	models.O.QueryTable(models.TableApi).OrderBy("-Id").All(&apis)
 	this.TplName = "apis.html"
+	this.Data["Apis"] = apis
 }
 
 //接口创建、更新、编辑
 func (this *UserController) ApiCreate() {
-	this.TplName = "api_edit.html"
+	//注意：这里的参数id，在query请求中，"id"首字母是小写的，在form表单中，"id"是首字母大写的
+	var id int
+	if this.Ctx.Input.IsPost() { //更新或创建
+		var form = this.Ctx.Request.Form
+		var apidata models.Api
+		var params = make(map[string]interface{})
+		id, _ = this.GetInt("Id") //接口id
+		if apidata.Title = strings.TrimSpace(form.Get("Title")); apidata.Title == "" {
+			this.Response(0, "接口名称不能为空")
+		}
+		if methods, ok := form["Methods"]; ok && len(methods) > 0 {
+			apidata.Methods = strings.Join(methods, ",")
+		} else {
+			this.Response(0, "请选择您的接口请求方法")
+		}
+		if apidata.Api = strings.TrimSpace(form.Get("Api")); apidata.Api == "" {
+			this.Response(0, "请填写您的接口API")
+		} else {
+			apidata.Api = "/" + strings.Trim(apidata.Api, " /") //去除斜线
+		}
+		apidata.JsonSucc = this.Ctx.Request.Form.Get("JsonSucc")
+		apidata.JsonErr = this.Ctx.Request.Form.Get("JsonErr")
+		if ParamsName, ok := form["ParamsName"]; ok {
+			params["ParamsName"] = ParamsName
+		}
+		if ParamsType, ok := form["ParamsType"]; ok {
+			params["ParamsType"] = ParamsType
+		}
+		if ParamsState, ok := form["ParamsState"]; ok {
+			params["ParamsState"] = ParamsState
+		}
+		if b, err := json.Marshal(params); err == nil {
+			apidata.Params = string(b)
+		}
+		apidata.Uid = this.LoginUser.Id
+		if id > 0 { //更新
+			apidata.Id = id
+			if affetd, _ := models.O.Update(&apidata); affetd > 0 {
+				this.Response(1, "更新成功")
+			} else {
+				this.Response(0, "更新失败，您要更换的API接口已存在")
+			}
+		} else { //判断接口是否已存在
+			if created, _, err := models.O.ReadOrCreate(&apidata, "Api", "Uid"); created && err == nil {
+				this.Response(1, "新增接口成功")
+			} else {
+				this.Response(0, "新增接口失败，您要创建的API接口已存在")
+			}
+		}
+	} else {
+		idstr := this.Ctx.Request.URL.Query().Get("id")
+		id, _ = strconv.Atoi(idstr)
+		this.Data["HasData"] = false
+		if id > 0 {
+			var api models.Api
+			models.O.QueryTable(models.TableApi).Filter("Id", id).Filter("Uid", this.LoginUser.Id).One(&api)
+			this.Data["Api"] = api
+			if api.Id > 0 {
+				this.Data["HasData"] = true
+			}
+		}
+		this.TplName = "api_edit.html"
+	}
+
 }
 
 //删除接口
 func (this *UserController) ApiDel() {
-
+	id, _ := this.GetInt("id")
+	if id > 0 {
+		if affected, _ := models.O.QueryTable(models.TableApi).Filter("Uid", this.LoginUser.Id).Filter("Id", id).Delete(); affected > 0 {
+			this.Response(1, "删除成功")
+		}
+	}
+	this.Response(0, "删除失败，您要删除的接口已不存在")
 }

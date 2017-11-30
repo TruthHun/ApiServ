@@ -14,10 +14,10 @@
             <div class="text-center">
                 {{if gt $.LoginUser.Id 0}}
                     <a href="{{urlfor "UserController.Apis"}}" class="btn btn-primary" title="API管理"> <i class=" fa fa-cogs"></i> API管理</a>
-                    <a href="{{urlfor "UserController.Logout"}}" class="btn btn-primary" title="退出登录"> <i class="fa fa-sign-out"></i>退出登录</a>
+                    <a href="{{urlfor "BaseController.Logout"}}" class="btn btn-primary" title="退出登录"> <i class="fa fa-sign-out"></i>退出登录</a>
                 {{else}}
-                    <a href="{{urlfor "UserController.Reg"}}" class="btn btn-primary" title="码上注册"> <i class="fa fa-user-o"></i> 码上注册</a>
-                    <a href="{{urlfor "UserController.Login"}}" class="btn btn-primary" title="码上登录"> <i class="fa fa-sign-in"></i> 码上登录</a>
+                    <a href="{{urlfor "BaseController.Reg"}}" class="btn btn-primary" title="码上注册"> <i class="fa fa-user-o"></i> 码上注册</a>
+                    <a href="{{urlfor "BaseController.Login"}}" class="btn btn-primary" title="码上登录"> <i class="fa fa-sign-in"></i> 码上登录</a>
                 {{end}}
             </div>
             <div class="description as-mgt-50px text-center">
