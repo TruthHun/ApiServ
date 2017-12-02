@@ -17,7 +17,6 @@ type BaseController struct {
 }
 
 func (this *BaseController) Prepare() {
-
 	//1、从session中获取用户的登录信息
 	if user := this.GetSession("LoginUser"); user != nil {
 		this.LoginUser = user.(models.User)

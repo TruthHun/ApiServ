@@ -3,8 +3,11 @@ package controllers
 import (
 	"ApiServ/models"
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/astaxie/beego"
 )
 
 type UserController struct {
@@ -21,9 +24,11 @@ func (this *UserController) Prepare() {
 //接口列表
 func (this *UserController) Apis() {
 	var apis []models.Api
+	ApiDomain := beego.AppConfig.DefaultString("api_domain", fmt.Sprintf("http://localhost:%v", beego.AppConfig.String("httpport")))
 	models.O.QueryTable(models.TableApi).Filter("Uid", this.LoginUser.Id).OrderBy("-Id").All(&apis)
 	this.TplName = "apis.html"
 	this.Data["Apis"] = apis
+	this.Data["ApiDomain"] = strings.TrimRight(ApiDomain, "/ ")
 }
 
 //接口创建、更新、编辑
