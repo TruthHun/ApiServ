@@ -60,7 +60,7 @@ $(function () {
             '                                                    <input type="text" class="form-control" placeholder="如‘用户名，字符串，2-20个字符’" name="ParamsState">\n' +
             '                                                </td>\n' +
             '                                                <td>\n' +
-            '                                                    <a href="javascript:void(0);" class="btn btn-danger params-del pull-right"> <i class="fa fa-remove"></i> 删除</a>\n' +
+            '                                                    <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>\n' +
             '                                                </td>\n' +
             '                                            </tr>';
         $("#as-api-edit tbody").append(html);

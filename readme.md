@@ -10,7 +10,8 @@
 
 ## 
 
-
+图片样式
+http://apiserv.oss-cn-hangzhou.aliyuncs.com/avatar.png?x-oss-process=image/resize,m_fill,w_400,h_400,limit_0/auto-orient,0
 
 
 

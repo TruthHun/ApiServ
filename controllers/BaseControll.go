@@ -44,7 +44,7 @@ func (this *BaseController) Reg() {
 		} else {
 			if InviteCode := strings.TrimSpace(beego.AppConfig.String("invite_code")); len(InviteCode) > 0 {
 				if ic, ok := params["InviteCode"]; !ok || ic != InviteCode {
-					this.Response(0, "注册邀请码不正确，请联系管理员获取")
+					this.Response(0, "目前站点处于邀请注册状态，您的注册邀请码不正确，可联系管理员获取")
 				}
 			}
 			if params["Password"].(string) != params["Repassword"] {

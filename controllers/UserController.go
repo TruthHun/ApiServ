@@ -21,7 +21,7 @@ func (this *UserController) Prepare() {
 //接口列表
 func (this *UserController) Apis() {
 	var apis []models.Api
-	models.O.QueryTable(models.TableApi).OrderBy("-Id").All(&apis)
+	models.O.QueryTable(models.TableApi).Filter("Uid", this.LoginUser.Id).OrderBy("-Id").All(&apis)
 	this.TplName = "apis.html"
 	this.Data["Apis"] = apis
 }
