@@ -19,6 +19,7 @@
                             {{else}}
                                 <strong>创建接口</strong>
                             {{end}}
+                                (<a href="javascript:void(0);"  data-toggle="modal" data-target="#ModalHelp"> <i class="fa fa-question"></i> 帮助指南</a>)
                             <span class="pull-right">
                                 <a href="{{urlfor "UserController.Apis"}}" title="接口管理"> <i class="fa fa-mail-reply"></i> 返回列表</a>
                             </span>
@@ -137,6 +138,32 @@
             </div>
         </div>
   </div>
+    <div class="modal fade" id="ModalHelp" tabindex="-1" role="dialog" aria-labelledby="ModalHelpLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalHelpLabel">帮助指南</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-indent">在接口返回的json数据中，难免需要用到各种尺寸大小的图片，为此，ApiServ借助阿里云的OSS，开启了一个图片处理服务，内置了20张图片(分别是1.png,2.png,...,20.png)，大家可以根据自己的需要，按照规则配置图片的尺寸大小。</div>
+                    <div class="text-indent">
+                        域名：http(s)://apiserv.oss-cn-hangzhou.aliyuncs.com
+                    </div>
+                    <div class="text-indent">示例：
+                        <ul>
+                            <li>返回宽高为100x100像素的图片(比如作为用户头像)</li>
+                            <li>http(s)://apiserv.oss-cn-hangzhou.aliyuncs.com/1.png?x-oss-process=image/resize,m_fill,<strong class="text-danger">w_100</strong>,<strong class="text-danger">h_100</strong>,limit_0/auto-orient,0</li>
+                            <li>其中，w_100,h_100分表表示宽100px，高100px，同理，如果您要配置300x300的图片，则使用w_300,h_300即可。由于内置了20张图片，所以您可以使用1.png或者2.png或者20.png等图片</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">知道了</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
     {{template "foot.html" .}}
 </body>
 </html>

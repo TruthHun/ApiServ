@@ -17,6 +17,7 @@ type BaseController struct {
 }
 
 func (this *BaseController) Prepare() {
+
 	//1、从session中获取用户的登录信息
 	if user := this.GetSession("LoginUser"); user != nil {
 		this.LoginUser = user.(models.User)
@@ -24,6 +25,13 @@ func (this *BaseController) Prepare() {
 
 	//2、分配信息到模板变量
 	this.Data["LoginUser"] = this.LoginUser
+
+	//判断当前是开发模式还是产品模式，开发模式，则调用本地的静态资源，否则调用公共库的静态资源
+	if beego.AppConfig.String("runmode") == "dev" {
+		this.Data["IsDev"] = true
+	} else {
+		this.Data["IsDev"] = false
+	}
 }
 
 //用户注册

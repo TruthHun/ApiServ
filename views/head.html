@@ -1,6 +1,14 @@
-<link rel="stylesheet" href="/static/css/vendor/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/static/css/flat-ui.min.css">
-<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+{{if $.IsDev}}
+    <link rel="stylesheet" href="/static/css/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/flat-ui.min.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+{{else}}
+    <link rel="stylesheet" href="//cdn.staticfile.org/flat-ui/2.2.0/css/vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.staticfile.org/flat-ui/2.2.0/css/flat-ui.min.css">
+    <link rel="stylesheet" href="//cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+{{end}}
+
+
 <link rel="stylesheet" href="/static/css/bootoast.css">
 <link rel="stylesheet" href="/static/css/jquery.json-viewer.css">
 <link rel="stylesheet" href="/static/css/apiserv.css">
