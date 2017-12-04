@@ -18,3 +18,5 @@ http://apiserv.oss-cn-hangzhou.aliyuncs.com/avatar.png?x-oss-process=image/resiz
 ## TODO
 - [ ] Redis缓存用户信息
 - [ ] Redis统计接口请求频率
+- [ ] 不登录也能查看到接口信息
+- [ ] 增加接口返回字段信息备注
