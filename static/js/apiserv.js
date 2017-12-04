@@ -7,6 +7,25 @@ $(function () {
         e.preventDefault();
         var form=$(this).parents("form"),data=form.serialize(),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url");
         if(redirect==undefined || redirect=="") redirect=location.href;
+        $(".valid-json-err").remove();
+        //判断是否检测json
+        var validjson=form.find(".valid-json"),jsonpass=true;
+        if (validjson!=undefined && validjson.length>0){
+            $.each(validjson,function () {
+                if (jsonpass){
+                    try{
+                        JSON.parse($(this).val());//解析json，如果错误，则提示json格式不正确
+                    }catch(e) {
+                        jsonpass=false;
+                        $(this).focus();
+                        var html='<span class="text-danger valid-json-err">'+e.toString()+'</span>';
+                        $(this).after(html);
+                    }
+
+                }
+            });
+        }
+        if (jsonpass==false) return;
         if(method!=undefined && method.toLowerCase()=="post"){
             $.post(action,data,function (ret) {
                 if(ret.Status==1){
@@ -98,7 +117,16 @@ $(function () {
             withQuotes: true,//key带双引号
         };
         $.each(jsons,function () {
-            $(this).siblings('.json-renderer').jsonViewer(eval('('+$(this).val()+')'),options);
+            var obj;
+            try {
+                var obj=JSON.parse($(this).val());
+                if(obj) $(this).siblings('.json-renderer').jsonViewer(obj,options);
+            }catch(e){
+                console.log(e.toString());
+                $(this).css({"border-color":"red"});
+                $(this).after("JSON数据语法错误："+e.toString());
+            }
+
         });
     }
 
