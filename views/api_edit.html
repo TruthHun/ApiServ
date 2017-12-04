@@ -146,6 +146,9 @@
                     <h4 class="modal-title" id="ModalHelpLabel">帮助指南</h4>
                 </div>
                 <div class="modal-body">
+                    <strong>参数相关</strong>
+                    <div class="text-indent">接口在调用的时候，默认返回成功时的json数据，如需返回错误时的json数据，则请在请求参数中添加‘as-succ’参数，并将参数值设置为false。其实，‘as-’是ApiServ的前缀，用于与您的其他参数区分开。</div>
+                    <strong>图片相关</strong>
                     <div class="text-indent">在接口返回的json数据中，难免需要用到各种尺寸大小的图片，为此，ApiServ借助阿里云的OSS，开启了一个图片处理服务，内置了20张图片(分别是1.png,2.png,...,20.png)，大家可以根据自己的需要，按照规则配置图片的尺寸大小。</div>
                     <div class="text-indent">
                         域名：http(s)://apiserv.oss-cn-hangzhou.aliyuncs.com
