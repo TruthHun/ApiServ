@@ -6,8 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{if .HasData}}编辑接口{{else}}创建接口{{end}} - ApiServ</title>
     {{template "head.html" .}}
-    <link rel="stylesheet" href="/static/css/jsoneditor.min.css">
-    <style>.jsoneditor-menu{display: none;}</style>
+    {{if $.IsDev}}
+        <link rel="stylesheet" href="/static/css/jsoneditor.min.css">
+    {{else}}
+            {{/*如果您有自己的静态资源链接，请换成自己的，这里后期我会做referer限制*/}}
+        <link rel="stylesheet" href="http://static.apiserv.me/jsoneditor.min.css">
+    {{end}}
+    <style>
+        .jsoneditor-menu{display: none;}
+        div.jsoneditor{border:2px solid #bdc3c7 !important;border-radius: 6px;}
+    </style>
 </head>
 <body id="as-api-edit">
     <div class="container-fluid">
@@ -124,14 +132,14 @@
                                     <label class="col-xs-12 nopadding-left">成功时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
                                         <div class="editor-json"></div>
-                                        <!-- <textarea name="JsonSucc" class="form-control valid-json" rows="8">{{.Api.JsonSucc}}</textarea> -->
+                                        <textarea name="JsonSucc" class="hidden as-json" rows="8">{{.Api.JsonSucc}}</textarea>
                                     </div>
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="col-xs-12 nopadding-left">失败时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
                                         <div class="editor-json"></div>
-                                        <!-- <textarea name="JsonErr" class="form-control valid-json" rows="8">{{.Api.JsonErr}}</textarea> -->
+                                        <textarea name="JsonErr" class="hidden as-json" rows="8">{{.Api.JsonErr}}</textarea>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block">提交</button>
@@ -172,19 +180,29 @@
         </div><!-- /.modal -->
     </div>
     {{template "foot.html" .}}
-    <script src="/static/js/ace.js"></script>
-    <script src="/static/js/jsoneditor-minimalist.min.js"></script>
+    {{if $.IsDev}}
+        <script src="/static/js/ace.js"></script>
+        <script src="/static/js/jsoneditor-minimalist.min.js"></script>
+    {{else}}
+    {{/*如果您有自己的静态资源链接，请换成自己的，这里后期我会做referer限制*/}}
+        <script src="http://static.apiserv.me/ace.js"></script>
+        <script src="http://static.apiserv.me/jsoneditor-minimalist.min.js"></script>
+    {{end}}
     <script>
         $(function(){
          // create the editor
             var containers =$(".editor-json");
             var options = {
-                // modes: ['text', 'code', 'tree', 'form', 'view'],
                 mode: 'code',
                 ace: ace
             };
-            var json = {};
+            var json={};
             $.each(containers,function(){
+                try {
+                    json=JSON.parse($(this).siblings("textarea").val());
+                }catch (e){
+                    console.log(e.toString());
+                }
                 var editor = new JSONEditor(this, options, json);
             })
         });

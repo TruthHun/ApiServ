@@ -4,21 +4,25 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>API管理 - ApiServ</title>
+    <title>{{.Username}}的API接口 - ApiServ</title>
     {{template "head.html" .}}
 </head>
 <body id="as-api-list">
     <div class="container-fluid">
         <div class="container">
             <div class="jumbotron as-mgt-50px">
-                <h1>API管理</h1>
-                <p>在这里，您可以通过新建、删除、编辑等操作管理您的API <!--，以及通过标签对您的API进行分组--></p>
-                <p class="help-block" style="font-size: 16px;">您当前的接口列表浏览链接：<a href="{{urlfor "BaseController.Apis" ":user" $.LoginUser.Username}}">{{$.ApiDomain}}{{urlfor "BaseController.Apis" ":user" $.LoginUser.Username}}</a>，您可以把该链接发给您的朋友。</p>
+                <h1>API接口查询</h1>
+                <p>您目前查看的是 {{.Username}} 的接口数据</p>
                 <p>
                     <a href="{{urlfor "IndexController.Index"}}" class="btn btn-primary"> <i class="fa fa-home"></i> 首页</a>
-                    <a href="{{urlfor "UserController.ApiCreate"}}" class="btn btn-primary"> <i class="fa fa-plus"></i> 新建接口</a>
-                    {{/*<a href="#" class="btn btn-primary" target="_blank"> <i class="fa fa-question"></i> 使用帮助</a>*/}}
-                    <a href="{{urlfor "BaseController.Logout"}}" class="btn btn-primary"> <i class="fa fa-sign-out"></i> 退出登录</a>
+                    {{if gt $.LoginUser.Id 0}}
+                        <a href="{{urlfor "UserController.ApiCreate"}}" class="btn btn-primary"> <i class="fa fa-plus"></i> 新建接口</a>
+                        <a href="{{urlfor "UserController.Apis"}}" class="btn btn-primary"> <i class="fa fa-cogs"></i> 管理我的接口</a>
+                        <a href="{{urlfor "BaseController.Logout"}}" class="btn btn-primary"> <i class="fa fa-sign-out"></i> 退出登录</a>
+                    {{else}}
+                        <a href="{{urlfor "BaseController.Reg"}}" class="btn btn-primary" title="码上注册"> <i class="fa fa-user-o"></i> 码上注册</a>
+                        <a href="{{urlfor "BaseController.Login"}}" class="btn btn-primary" title="码上登录"> <i class="fa fa-sign-in"></i> 码上登录</a>
+                    {{end}}
                 </p>
             </div>
 
@@ -43,10 +47,6 @@
                                 <div class="panel-heading">
                                     <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{.Id}}">{{.Title}}</a>
-                                        <span class="pull-right">
-                                        <a href="{{urlfor "UserController.ApiCreate"}}?id={{.Id}}"> <i class="fa fa-pencil"></i> 编辑</a>  <span> | </span>
-                                        <a href="{{urlfor "UserController.ApiDel"}}?id={{.Id}}" class="ajax-get"> <i class="fa fa-remove"></i> 删除</a>
-                                    </span>
                                     </h4>
                                 </div>
                                 <div id="collapse{{.Id}}" class="panel-collapse collapse {{if eq $idx 0}}in{{end}}">
@@ -58,7 +58,7 @@
                                             </li>
                                             <li>
                                                 <div>请求URL</div>
-                                                <div class="help-block">{{$.ApiDomain}}/api/{{$.LoginUser.Username}}/{{TrimLeft .Api " /"}}</div>
+                                                <div class="help-block">{{$.ApiDomain}}/api/{{$.Username}}/{{TrimLeft .Api " /"}}</div>
                                             </li>
                                             <li>
                                                 <div>请求方法</div>

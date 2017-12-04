@@ -5,13 +5,15 @@ $(function () {
 
     $(".ajax-form [type=submit]").click(function (e) {
         e.preventDefault();
-        var form=$(this).parents("form"),data=form.serialize(),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url");
+        var form=$(this).parents("form"),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url");
         if(redirect==undefined || redirect=="") redirect=location.href;
         $(".valid-json-err").remove();
         //判断是否检测json
-        var validjson=form.find(".valid-json"),jsonpass=true;
-        if (validjson!=undefined && validjson.length>0){
-            $.each(validjson,function () {
+        var asjson=form.find(".as-json"),jsonpass=true;
+        if (asjson!=undefined && asjson.length>0){
+            $.each(asjson,function () {
+                console.log($(this).siblings(".editor-json").find(".ace_text-layer").text());
+                $(this).val($(this).siblings(".editor-json").find(".ace_text-layer").text());
                 if (jsonpass){
                     try{
                         JSON.parse($(this).val());//解析json，如果错误，则提示json格式不正确
@@ -25,7 +27,13 @@ $(function () {
                 }
             });
         }
-        if (jsonpass==false) return;
+        if (jsonpass==false) {
+            setTimeout(function () {
+                $(".valid-json-err").remove();
+            },3000);
+            return;
+        }
+        var data=form.serialize();
         if(method!=undefined && method.toLowerCase()=="post"){
             $.post(action,data,function (ret) {
                 if(ret.Status==1){

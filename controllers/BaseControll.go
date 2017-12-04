@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
+
 	"github.com/TruthHun/gotil/cryptil"
 	"github.com/TruthHun/gotil/validatil"
 	"github.com/astaxie/beego"
@@ -138,4 +140,22 @@ func (this *BaseController) Response(status int, msg string, data ...interface{}
 	this.Data["json"] = resp
 	this.ServeJSON()
 	this.StopRun()
+}
+
+//免登录查看接口
+func (this *BaseController) Apis() {
+	var apis []models.Api
+	var user models.User
+	if username := strings.TrimSpace(this.GetString(":user")); username != "" {
+		models.O.QueryTable(models.TableUser).Filter("Username", username).One(&user, "Id", "Username")
+	}
+	if user.Id == 0 {
+		this.Abort("404")
+	}
+	ApiDomain := beego.AppConfig.DefaultString("api_domain", fmt.Sprintf("http://localhost:%v", beego.AppConfig.String("httpport")))
+	models.O.QueryTable(models.TableApi).Filter("Uid", user.Id).OrderBy("-Id").All(&apis)
+	this.TplName = "apis_free.html"
+	this.Data["Apis"] = apis
+	this.Data["Username"] = user.Username
+	this.Data["ApiDomain"] = strings.TrimRight(ApiDomain, "/ ")
 }
