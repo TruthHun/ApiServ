@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{if .HasData}}编辑接口{{else}}创建接口{{end}} - ApiServ</title>
     {{template "head.html" .}}
+    <link rel="stylesheet" href="/static/css/jsoneditor.min.css">
+    <style>.jsoneditor-menu{display: none;}</style>
 </head>
 <body id="as-api-edit">
     <div class="container-fluid">
@@ -121,13 +123,15 @@
                                 <div class="form-group clearfix">
                                     <label class="col-xs-12 nopadding-left">成功时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
-                                        <textarea name="JsonSucc" class="form-control valid-json" rows="8">{{.Api.JsonSucc}}</textarea>
+                                        <div class="editor-json"></div>
+                                        <!-- <textarea name="JsonSucc" class="form-control valid-json" rows="8">{{.Api.JsonSucc}}</textarea> -->
                                     </div>
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="col-xs-12 nopadding-left">失败时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
-                                        <textarea name="JsonErr" class="form-control valid-json" rows="8">{{.Api.JsonErr}}</textarea>
+                                        <div class="editor-json"></div>
+                                        <!-- <textarea name="JsonErr" class="form-control valid-json" rows="8">{{.Api.JsonErr}}</textarea> -->
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block">提交</button>
@@ -168,5 +172,23 @@
         </div><!-- /.modal -->
     </div>
     {{template "foot.html" .}}
+    <script src="/static/js/ace.js"></script>
+    <script src="/static/js/jsoneditor-minimalist.min.js"></script>
+    <script>
+        $(function(){
+         // create the editor
+            var containers =$(".editor-json");
+            var options = {
+                // modes: ['text', 'code', 'tree', 'form', 'view'],
+                mode: 'code',
+                ace: ace
+            };
+            var json = {};
+            $.each(containers,function(){
+                var editor = new JSONEditor(this, options, json);
+            })
+        });
+  
+    </script>
 </body>
 </html>
