@@ -5,39 +5,8 @@ $(function () {
 
     $(".ajax-form [type=submit]").click(function (e) {
         e.preventDefault();
-        var form=$(this).parents("form"),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url");
+        var form=$(this).parents("form"),action=form.attr("action"),method=form.attr("method"),redirect=form.attr("data-url"),data=form.serialize();;
         if(redirect==undefined || redirect=="") redirect=location.href;
-        $(".valid-json-err").remove();
-        //判断是否检测json
-        var asjson=form.find(".as-json"),jsonpass=true;
-        if (asjson!=undefined && asjson.length>0){
-            $(".jsoneditor-compact").trigger("click");
-            $.each(asjson,function () {
-                var editor = new JSONEditor($(this).siblings(".editor-json"), options);
-                console.log(editor.get());
-                // console.log($(this).siblings(".editor-json").find(".ace_text-layer").text());
-                $(this).val($(this).siblings(".editor-json").find(".ace_text-layer").text().trim());
-                // if (jsonpass){
-                //     try{
-                //         JSON.parse($(this).val());//解析json，如果错误，则提示json格式不正确
-                //     }catch(e) {
-                //         jsonpass=false;
-                //         $(this).focus();
-                //         var html='<span class="text-danger valid-json-err">'+e.toString()+'</span>';
-                //         $(this).after(html);
-                //     }
-                //
-                // }
-            });
-        }
-        // if (jsonpass==false) {
-        //     setTimeout(function () {
-        //         $(".valid-json-err").remove();
-        //     },3000);
-        //     return;
-        // }
-        return
-        var data=form.serialize();
         if(method!=undefined && method.toLowerCase()=="post"){
             $.post(action,data,function (ret) {
                 if(ret.Status==1){

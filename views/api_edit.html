@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="http://static.apiserv.me/jsoneditor.min.css">
     {{end}}
     <style>
-        /*.jsoneditor-menu{display: none;}*/
+        .jsoneditor-menu{display: none;}
         div.jsoneditor{border:2px solid #bdc3c7 !important;border-radius: 6px;}
     </style>
 </head>
@@ -35,7 +35,7 @@
                             </span>
                         </div>
                         <div class="panel-body">
-                            <form role="form as-mgt-50px" data-url="{{urlfor "UserController.Apis"}}" method="post" class="ajax-form">
+                            <form role="form" data-url="{{urlfor "UserController.Apis"}}" method="post" class="json-form">
                                 <div class="form-group">
                                     <label>接口名称 <span class="text-danger">*</span> </label>
                                     <input type="text" required="required" class="form-control" value="{{.Api.Title}}" name="Title" placeholder="请输入接口名称，如‘用户登录’">
@@ -131,14 +131,14 @@
                                 <div class="form-group clearfix">
                                     <label class="col-xs-12 nopadding-left">成功时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
-                                        <div class="editor-json"></div>
+                                        <div class="editor-json" id="JsonSucc"></div>
                                         <textarea name="JsonSucc" class="hidden as-json" rows="8">{{.Api.JsonSucc}}</textarea>
                                     </div>
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="col-xs-12 nopadding-left">失败时的JSON响应</label>
                                     <div class="col-xs-12 nopadding">
-                                        <div class="editor-json"></div>
+                                        <div class="editor-json" id="JsonErr"></div>
                                         <textarea name="JsonErr" class="hidden as-json" rows="8">{{.Api.JsonErr}}</textarea>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@
         <script src="/static/js/ace.js"></script>
         <script src="/static/js/jsoneditor-minimalist.min.js"></script>
     {{else}}
-    {{/*如果您有自己的静态资源链接，请换成自己的，这里后期我会做referer限制*/}}
+        {{/*如果您有自己的静态资源链接，请换成自己的，这里后期我会做referer限制*/}}
         <script src="http://static.apiserv.me/ace.js"></script>
         <script src="http://static.apiserv.me/jsoneditor-minimalist.min.js"></script>
     {{end}}
@@ -196,14 +196,45 @@
                 mode: 'code',
                 ace: ace
             };
-            var json={};
-            $.each(containers,function(){
+            var jsonSucc={},jsonErr={};
+            var ContainerSucc=document.getElementById("JsonSucc"),ContainerErr=document.getElementById("JsonErr");
+            try {
+                jsonSucc=JSON.parse($("#JsonSucc").siblings("textarea").val());
+            }catch (e){
+                console.log(e.toString());
+            }
+            try {
+                jsonErr=JSON.parse($("#JsonErr").siblings("textarea").val());
+            }catch (e){
+                console.log(e.toString());
+            }
+            var editorSucc = new JSONEditor(ContainerSucc, options, jsonSucc);
+            var editorErr = new JSONEditor(ContainerErr, options, jsonErr);
+            console.log(editorSucc.get());
+
+            $(".json-form [type=submit]").click(function(e){
+                e.preventDefault();
+                var form=$(this).parent("form"),ms=new Date().getMilliseconds(),cls="danger-"+ms,passNum=0;
                 try {
-                    json=JSON.parse($(this).siblings("textarea").val());
-                }catch (e){
-                    console.log(e.toString());
+                    form.find("[name=JsonSucc]").val(JSON.stringify(editorSucc.get()));
+                    passNum++;
+                } catch (error) {
+                    $("#JsonSucc").after('<div class="text-danger '+cls+'">'+error.toString()+'</div>');
+                    editorSucc.focus();
                 }
-                var editor = new JSONEditor(this, options, json);
+                try {
+                    form.find("[name=JsonErr]").val(JSON.stringify(editorErr.get()));
+                    passNum++;
+                } catch (error) {
+                    $("#JsonErr").after('<div class="text-danger '+cls+'">'+error.toString()+'</div>');
+                    editorErr.focus();
+                }
+                setTimeout(function(){
+                    $("."+cls).remove();
+                }, 3000);
+                console.log(editorErr.get());
+                console.log(JSON.stringify(editorSucc.get()));
+                console.log(form.serialize());
             })
         });
   
