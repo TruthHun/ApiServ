@@ -115,6 +115,20 @@ $(function () {
         toggle: false
     });
 
+    //遍历并去重数组key值，返回key集合
+    function EnumKey(js){
+        var keys=[];
+        $.each(js,function(key,val){
+            if(typeof key=='string'){
+                keys.push(key);
+            }
+            if(typeof val=="object" && val!=null && val!=undefined){
+               keys.push(...EnumKey(val));
+            }
+        });
+        return new Set(keys);
+    }
+
 });
 
 
