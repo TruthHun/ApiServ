@@ -232,9 +232,23 @@
                 setTimeout(function(){
                     $("."+cls).remove();
                 }, 3000);
-                console.log(editorErr.get());
-                console.log(JSON.stringify(editorSucc.get()));
-                console.log(form.serialize());
+                if(passNum==2){
+                    $.post(form.attr("action"),form.serialize(),function (ret) {
+                        if (ret.Status==1){
+                            location.href=form.attr("data-url");
+                        }else{
+                            bootoast({
+                                message: ret.Msg,
+                                type: 'danger',
+                                position:'right-bottom',
+                                timeout:3
+                            });
+                        }
+                    })
+                }
+
+
+
             })
         });
   

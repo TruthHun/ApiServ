@@ -103,7 +103,6 @@ $(function () {
                 var obj=JSON.parse($(this).val());
                 if(obj) $(this).siblings('.json-renderer').jsonViewer(obj,options);
             }catch(e){
-                console.log(e.toString());
                 $(this).css({"border-color":"red"});
                 $(this).after("JSON数据语法错误："+e.toString());
             }

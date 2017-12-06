@@ -73,7 +73,11 @@ func (this *UserController) ApiCreate() {
 			if affetd, _ := models.O.Update(&apidata); affetd > 0 {
 				this.Response(1, "更新成功")
 			} else {
-				this.Response(0, "更新失败，您要更换的API接口已存在")
+				if apidata.Id > 0 {
+					this.Response(0, "更新失败，您没有对内容进行更改")
+				} else {
+					this.Response(0, "更新失败，您要更换的API接口已存在")
+				}
 			}
 		} else { //判断接口是否已存在
 			if created, _, err := models.O.ReadOrCreate(&apidata, "Api", "Uid"); created && err == nil {
