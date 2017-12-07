@@ -53,7 +53,7 @@ func (this *Api) GetToResponse(username string, api string, method string, succ 
 	O.Raw(sql, username, api).Values(&params)
 	if len(params) > 0 {
 		if !strings.Contains(params[0]["Methods"].(string), method) {
-			return "", errors.New(fmt.Sprintf("请求方法（%v）不符合接口邀请，当前接口允许的请求方法为：%v", method, params[0]["Methods"].(string)))
+			return "", errors.New(fmt.Sprintf("请求方法（%v）不符合接口要求，当前接口允许的请求方法为：%v", method, params[0]["Methods"].(string)))
 		}
 		if retsucc {
 			return params[0]["JsonSucc"].(string), nil
