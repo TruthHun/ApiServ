@@ -112,6 +112,29 @@
                                                     <textarea class="form-control" rows="2">{{.JsonErr}}</textarea>
                                                 </div>
                                             </li>
+                                            <li>
+                                                <div>响应字段</div>
+                                                <div class="help-block">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>响应字段</th>
+                                                                <th>字段说明</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {{range (HandleResp .Resp)}}
+                                                            <tr>
+                                                                <td>{{.ResponseField}}</td>
+                                                                <td>{{.ResponseState}}</td>
+                                                            </tr>
+                                                            {{end}}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

@@ -63,12 +63,30 @@ $(function () {
             '                                                    <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>\n' +
             '                                                </td>\n' +
             '                                            </tr>';
-        $("#as-api-edit tbody").append(html);
+        $("#as-api-edit .table-params tbody").append(html);
     });
     //删除参数
     $(document).on("click","#as-api-edit .params-del",function () {
         $(this).parents("tr").remove();
+    });
+    //添加响应字段
+    $("#as-api-edit .response-add").click(function () {
+        var html='<tr>\n' +
+            '                                                <td class="nopadding-left">\n' +
+            '                                                    <input type="text" class="form-control" placeholder="如‘nickname’" name="ResponseField">\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <input type="text" class="form-control" placeholder="如‘用户昵称’" name="ResponseState">\n' +
+            '                                                </td>\n' +
+            '                                                <td>\n' +
+            '                                                    <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>\n' +
+            '                                                </td>\n' +
+            '                                            </tr>';
+        $("#as-api-edit .table-response tbody").append(html);
     })
+
+
+
 
     //ajax-get
     $("a.ajax-get").click(function (e) {
@@ -103,7 +121,6 @@ $(function () {
                 var obj=JSON.parse($(this).val());
                 if(obj) $(this).siblings('.json-renderer').jsonViewer(obj,options);
             }catch(e){
-                console.log(e.toString());
                 $(this).css({"border-color":"red"});
                 $(this).after("JSON数据语法错误："+e.toString());
             }

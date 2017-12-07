@@ -59,7 +59,7 @@
                                 <div class="form-group">
                                     <label>请求参数 (<a href="javascript:void(0);" class="params-add"><i class="fa fa-plus"></i>加一行</a>)</label>
                                     <div class="table-responsive">
-                                        <table class="table">
+                                        <table class="table table-params">
                                             <thead>
                                             <tr>
                                                 <th class="nopadding-left">参数名</th>
@@ -142,6 +142,54 @@
                                         <textarea name="JsonErr" class="hidden as-json" rows="8">{{.Api.JsonErr}}</textarea>
                                     </div>
                                 </div>
+
+
+                                <div class="form-group">
+                                    <label>响应说明 (<a href="javascript:void(0);" class="response-auto" title="从上面的json响应中自动提取字段"><i class="fa fa-refresh"></i>自提字段</a> | <a href="javascript:void(0);" class="response-add"><i class="fa fa-plus"></i>加一行</a>)</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-response">
+                                            <thead>
+                                            <tr>
+                                                <th class="nopadding-left">响应字段</th>
+                                                <th>字段说明</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{if eq $.HasData true}}
+                                                {{range (HandleResp .Api.Resp)}}
+                                                <tr>
+                                                    <td class="nopadding-left">
+                                                        <input type="text" class="form-control" value="{{.ResponseField}}" placeholder="如‘nickname’" name="ResponseField">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" value="{{.ResponseState}}" placeholder="如‘用户昵称’" name="ResponseState">
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>
+                                                    </td>
+                                                </tr>
+                                                {{end}}
+                                            {{end}}
+                                            <tr>
+                                                <td class="nopadding-left">
+                                                    <input type="text" class="form-control" placeholder="如‘nickname’" name="ResponseField">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" placeholder="如‘用户昵称’" name="ResponseState">
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>
+                                                </td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+
                                 <button type="submit" class="btn btn-primary btn-block">提交</button>
                             </form>
                         </div>
@@ -210,7 +258,40 @@
             }
             var editorSucc = new JSONEditor(ContainerSucc, options, jsonSucc);
             var editorErr = new JSONEditor(ContainerErr, options, jsonErr);
-            console.log(editorSucc.get());
+
+
+            //自动提取字段并追加[这个必须放在这里，毕竟editor在这里]
+            $(".response-auto").click(function () {
+                var respSucc=new Set(),respErr=new Set(),keys=[];
+                try{
+                    respSucc=EnumKeys(editorSucc.get())
+                }catch(e) {
+                    console.log(e.toString());
+                }
+                try{
+                    respErr=EnumKeys(editorErr.get())
+                }catch(e) {
+                    console.log(e.toString());
+                }
+                keys.push(...respSucc,...respErr);
+                var ksets=new Set(keys);
+                var html =[];
+                for(var key of ksets){
+                    html.push('<tr>\n' +
+                            '                                                <td class="nopadding-left">\n' +
+                            '                                                    <input type="text" class="form-control" value="'+key+'" placeholder="如‘nickname’" name="ResponseField">\n' +
+                            '                                                </td>\n' +
+                            '                                                <td>\n' +
+                            '                                                    <input type="text" class="form-control" placeholder="如‘用户昵称’" name="ResponseState">\n' +
+                            '                                                </td>\n' +
+                            '                                                <td>\n' +
+                            '                                                    <a href="javascript:void(0);" class="btn btn-danger params-del btn-block"> <i class="fa fa-remove"></i> 删除</a>\n' +
+                            '                                                </td>\n' +
+                            '                                            </tr>')
+                }
+                $("#as-api-edit .table-response tbody").prepend(html.join(""));
+
+            });
 
             $(".json-form [type=submit]").click(function(e){
                 e.preventDefault();
@@ -232,10 +313,36 @@
                 setTimeout(function(){
                     $("."+cls).remove();
                 }, 3000);
-                console.log(editorErr.get());
-                console.log(JSON.stringify(editorSucc.get()));
-                console.log(form.serialize());
-            })
+                if(passNum==2){
+                    $.post(form.attr("action"),form.serialize(),function (ret) {
+                        if (ret.Status==1){
+                            location.href=form.attr("data-url");
+                        }else{
+                            bootoast({
+                                message: ret.Msg,
+                                type: 'danger',
+                                position:'right-bottom',
+                                timeout:3
+                            });
+                        }
+                    })
+                }
+            });
+
+            //提取json中的key
+            function EnumKeys(js) {
+                var keys =[];
+                $.each(js,function (key,val) {
+                    if (typeof key=='string'){
+                        keys.push(key);
+                    }
+                    if(typeof val=='object' && val!=null && val!=undefined){
+                        keys.push(...EnumKeys(val));
+                    }
+                });
+                return new Set(keys);
+            }
+
         });
   
     </script>

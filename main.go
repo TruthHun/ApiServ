@@ -33,6 +33,11 @@ type ParamsStruct struct {
 	ParamsType  []string `json:"ParamsType"`
 }
 
+type ResponseStruct struct {
+	ResponseField []string `json:"ResponseField"`
+	ResponseState []string `json:"ResponseState"`
+}
+
 //模板函数直接写在这里了
 func SetTplFunc() {
 	//分割字符串成数组
@@ -60,11 +65,36 @@ func SetTplFunc() {
 				pn := params.ParamsName[i]
 				ps := params.ParamsState[i]
 				pt := params.ParamsType[i]
-				if len(pn) > 0 && len(ps) > 0 && len(pt) > 0 {
+				if len(pn) > 0 { //有参数名的才显示
 					data = append(data, map[string]string{
-						"ParamsName":  params.ParamsName[i],
-						"ParamsState": params.ParamsState[i],
-						"ParamsType":  params.ParamsType[i],
+						"ParamsName":  pn,
+						"ParamsState": ps,
+						"ParamsType":  pt,
+					})
+				}
+			}
+		}
+		return data
+	})
+
+	//{"ResponseField":["hello","msg","err","username",""],"ResponseState":["问好","信息","错误","用户名",""]}
+	//操作响应字段说明
+	beego.AddFuncMap("HandleResp", func(respjson string) []map[string]string {
+		var (
+			resp ResponseStruct
+			data []map[string]string
+		)
+		json.Unmarshal([]byte(respjson), &resp)
+		l1 := len(resp.ResponseField)
+		l2 := len(resp.ResponseState)
+		if l1 == l2 {
+			for i := 0; i < l1; i++ {
+				rf := resp.ResponseField[i]
+				rs := resp.ResponseState[i]
+				if len(rf) > 0 { //有响应字段的才显示
+					data = append(data, map[string]string{
+						"ResponseField": rf,
+						"ResponseState": rs,
 					})
 				}
 			}

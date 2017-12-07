@@ -39,6 +39,7 @@ func (this *UserController) ApiCreate() {
 		var form = this.Ctx.Request.Form
 		var apidata models.Api
 		var params = make(map[string]interface{})
+		var resp = make(map[string]interface{})
 		id, _ = this.GetInt("Id") //接口id
 		if apidata.Title = strings.TrimSpace(form.Get("Title")); apidata.Title == "" {
 			this.Response(0, "接口名称不能为空")
@@ -55,25 +56,40 @@ func (this *UserController) ApiCreate() {
 		}
 		apidata.JsonSucc = this.Ctx.Request.Form.Get("JsonSucc")
 		apidata.JsonErr = this.Ctx.Request.Form.Get("JsonErr")
-		if ParamsName, ok := form["ParamsName"]; ok {
-			params["ParamsName"] = ParamsName
+		if val, ok := form["ParamsName"]; ok {
+			params["ParamsName"] = val
 		}
-		if ParamsType, ok := form["ParamsType"]; ok {
-			params["ParamsType"] = ParamsType
+		if val, ok := form["ParamsType"]; ok {
+			params["ParamsType"] = val
 		}
-		if ParamsState, ok := form["ParamsState"]; ok {
-			params["ParamsState"] = ParamsState
+		if val, ok := form["ParamsState"]; ok {
+			params["ParamsState"] = val
 		}
 		if b, err := json.Marshal(params); err == nil {
 			apidata.Params = string(b)
 		}
+
+		if val, ok := form["ResponseField"]; ok {
+			resp["ResponseField"] = val
+		}
+		if val, ok := form["ResponseState"]; ok {
+			resp["ResponseState"] = val
+		}
+		if b, err := json.Marshal(resp); err == nil {
+			apidata.Resp = string(b)
+		}
+
 		apidata.Uid = this.LoginUser.Id
 		if id > 0 { //更新
 			apidata.Id = id
 			if affetd, _ := models.O.Update(&apidata); affetd > 0 {
 				this.Response(1, "更新成功")
 			} else {
-				this.Response(0, "更新失败，您要更换的API接口已存在")
+				if apidata.Id > 0 {
+					this.Response(0, "更新失败，您没有对内容进行更改")
+				} else {
+					this.Response(0, "更新失败，您要更换的API接口已存在")
+				}
 			}
 		} else { //判断接口是否已存在
 			if created, _, err := models.O.ReadOrCreate(&apidata, "Api", "Uid"); created && err == nil {
