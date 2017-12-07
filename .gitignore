@@ -16,4 +16,5 @@
 .glide/
 ApiServ
 cache
+ApiServ.*
 conf/app.conf
